@@ -1,6 +1,5 @@
 import VueRouter from 'vue-router'
 import Copyright from './components/copyright/Copyright.vue'
-import CopyrightBook from './components/copyright/CopyrightBook.vue'
 import OperationRecord from './components/back/OperationRecord.vue'
 import Mail from './components/mail/Mail.vue'
 import MailAdd from './components/mail/MailAdd.vue'
@@ -11,11 +10,7 @@ import SingleCancelAuth from './components/singlebook/SingleCancelAuth.vue'
 
 var router = new VueRouter({
     routes:[
-        { path: '/copyright', component: Copyright,
-            children: [
-                {path: 'copyright-book', component: CopyrightBook},
-            ]
-        },
+        { path: '/copyright', component: Copyright },
         { path: '/operation-record', component: OperationRecord },
         { path: '/mail', component: Mail },
         { path: '/mail-add', component: MailAdd },

@@ -4,33 +4,36 @@
             <Select v-model="model1" style="width:300px">
                 <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
             </Select>
-            <Button type="primary" @click="add = true">新 增</Button>
+            <Button type="primary" @click="showAdd = true">新 增</Button>
             <Button type="error">删 除</Button>
             <Button type="success" @click="sync=true">数据同步</Button>
         </div>
         <div style="margin-top: 30px;">
-            <Table border highlight-row ref="selection" :columns="columns4" :data="copyRightList" style="margin-bottom: 30px;" @on-selection-change="onSelectionChange">
+            <Table border ref="selection" :columns="columns4" :data="copyRightList" style="margin-bottom: 30px;" @on-selection-change="onSelectionChange">
                 <template slot-scope="{ row, index }" slot="update">
-                    <Button type="primary" size="small" @click="showUpdate(index)">修 改</Button>
+                    <Button type="primary" size="small" @click="showUpdateMethod(row)">修 改</Button>
                 </template>
                 <template slot-scope="{ row, index }" slot="detail">
-                    <Button type="success" size="small" style="margin-right: 5px" @click="showDetail(index)">明 细</Button>
+                    <Button type="success" size="small" style="margin-right: 5px" @click="showDetailMethod(index)">明 细</Button>
+                </template>
+                <template slot-scope="{ row, index }" slot="books">
+                    <Button size="small" style="margin-right: 5px" @click="showBooksMethod(row)">书 籍</Button>
                 </template>
             </Table>
             <Button @click="handleSelectAll(true)">全选</Button>
             <Button @click="handleSelectAll(false)">清除</Button>
         </div>
         <Modal
-                v-model="add"
+                v-model="showAdd"
                 :mask-closable="false"
                 title="新增版权方">
-            <Form :model="formItem" :label-width="80">
+            <Form :label-width="80">
                 <FormItem label="Input">
                     <Input v-model="addForm.input" placeholder="版权方名称"></Input>
                 </FormItem>
                 <FormItem>
                     <Button type="primary">Submit</Button>
-                    <Button style="margin-left: 8px" @click="add=false">Cancel</Button>
+                    <Button style="margin-left: 8px" @click="showAdd=false">Cancel</Button>
                 </FormItem>
             </Form>
         </Modal>
@@ -49,18 +52,27 @@
             </div>
         </Modal>
         <Modal
-                v-model="update"
+                v-model="showUpdate"
                 :mask-closable="false"
                 title="修改版权方">
-            <Form :model="formItem" :label-width="80">
-                <FormItem v-for="item in updateForm" :label="item.chName">
-                    <Input v-model="item.value" ></Input>
+            <Form :label-width="80">
+                <FormItem v-for="(value, key) in updateForm" :label="key">
+                    <Input v-model="updateForm[key]" ></Input>
                 </FormItem>
                 <FormItem>
-                    <Button type="primary" @click="update1">Submit</Button>
-                    <Button style="margin-left: 8px" @click="update=false">Cancel</Button>
+                    <Button type="primary" @click="updateCopyright()">Submit</Button>
+                    <Button style="margin-left: 8px" @click="showUpdate=false">Cancel</Button>
                 </FormItem>
             </Form>
+        </Modal>
+        <Modal
+                v-model="showBooks"
+                :mask-closable="false"
+                title="书籍列表">
+            <div style="padding: 20px;">
+                <p><h1 style="font-size: 16px;">{{ copyrightBooks.copyrightName }}</h1></p>
+                <Table :columns="copyrightBooks.bookColumn" :data="copyrightBooks.booklist"></Table>
+            </div>
         </Modal>
     </div>
 </template>
@@ -69,7 +81,7 @@
         data () {
             return {
                 //新增模块显示开关
-                add: false,
+                showAdd: false,
                 //新增表单数据
                 addForm: {
                     input: '',
@@ -77,12 +89,11 @@
                 //数据同步
                 sync: false,
                 //修改模块显示开关
-                update: false,
+                showUpdate: false,
                 //更新表单数据
-                updateForm: {
-                    copyrightId: {chName: '版权方ID', value: '123'},
-                    copyrightName: {chName: '版权方名称', value: '456'},
-                },
+                updateForm: {},
+                //书籍列表显示开关
+                showBooks: false,
                 //合作版权方类型
                 typeList: [
                     {
@@ -138,6 +149,12 @@
                         width: 120,
                         align: 'center'
                     },
+                    {
+                        title: '书籍列表',
+                        slot: 'books',
+                        width: 120,
+                        align: 'center'
+                    },
                 ],
                 //表格数据
                 copyRightList: [
@@ -168,6 +185,56 @@
                 ],
                 //选定版权方
                 selections: [],
+                //版权书籍展示
+                copyrightBooks: {
+                    copyrightName: '',
+                    //书籍列表字段名
+                    bookColumn: [
+                        {
+                            title: '书名',
+                            key: 'bookName'
+                        },
+                        {
+                            title: '列名2',
+                            key: 'column2'
+                        },
+                        {
+                            title: '列名3',
+                            key: 'column3'
+                        },
+                        {
+                            title: '列名4',
+                            key: 'column5'
+                        },
+                        {
+                            title: '列名5',
+                            key: 'column5'
+                        },
+                        {
+                            title: '列名6',
+                            key: 'column6'
+                        }
+                    ],
+                    //列表书籍
+                    booklist: [
+                        {
+                            bookName: '战神狂飙',
+                            column2: '2',
+                            column3: '3',
+                            column4: '4',
+                            column5: '5',
+                            column6: '6',
+                        },
+                        {
+                            bookName: '真武战神',
+                            column2: '2',
+                            column3: '3',
+                            column4: '4',
+                            column5: '5',
+                            column6: '6',
+                        }
+                    ]
+                },
             }
         },
         methods: {
@@ -181,23 +248,34 @@
                 return {}
             },
             //表格单行明细
-            showDetail (index) {
+            showDetailMethod (index) {
                 this.$Modal.info({
                     title: 'User Info',
                     content: `Name：${this.copyRightList[index].name}<br>Age：${this.copyRightList[index].age}<br>Address：${this.copyRightList[index].address}`
                 })
             },
-            //表格单行修改
-            showUpdate () {
-                this.update = true;
+            //显示表格单行修改
+            showUpdateMethod (row) {
+                this.showUpdate = true
+                this.updateForm = Object.assign({}, row)
+                delete this.updateForm._index
+                delete this.updateForm._rowKey
+                //row不是iteratable，只能用for in 循环遍历
+                for(const key in this.updateForm) {
+                    console.log(key+'-'+this.updateForm[key])
+                }
+
             },
             //表格单行更新
-            update1 () {
+            updateCopyright () {
+                console.log();
                 console.log(this.updateForm);
             },
-            //表格单行移除
-            remove (index) {
-                this.copyRightList.splice(index, 1);
+            //版权方书籍列表
+            showBooksMethod (row) {
+                this.showBooks = true;
+                console.log(row)
+                this.copyrightBooks.copyrightName = row.name
             },
             //表格行选定事件
             onSelectionChange (selections) {
