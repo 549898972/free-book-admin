@@ -78,7 +78,7 @@
             </Header>
             <Layout>
                 <Sider hide-trigger :style="{background: '#fff'}">
-                    <Menu active-name="1-2" theme="light" width="auto" :open-names="['1']">
+                    <Menu active-name="1-2" theme="light" width="auto" :open-names="['1']" ref="menu">
                         <Submenu name="copyright">
                             <template slot="title">
                                 <span class="iconfont">&#xe632; </span>

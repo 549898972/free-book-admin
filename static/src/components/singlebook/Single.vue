@@ -12,12 +12,12 @@
         </div>
         <div class="booklist-module">
             <div class="button-group">
-                <Button type="primary">bkey新增</Button>
-                <Button type="primary">bookid新增</Button>
-                <Button type="error">取消授权</Button>
-                <Button type="default">导出</Button>
+                <Button type="primary" @click="singleAddBkey">bkey新增</Button>
+                <Button type="primary" @click="singleAddBookid">bookid新增</Button>
+                <Button type="error" @click="singleCancelAuth">取消授权</Button>
+                <Button type="default" @click="exportData">导出</Button>
             </div>
-            <Table :columns="books.bookColumn" :data="books.bookList">
+            <Table :columns="books.bookColumn" :data="books.bookList" ref="table">
 
             </Table>
         </div>
@@ -142,7 +142,22 @@
         methods: {
             queryBookList () {
                 this.keyword
-            }
+            },
+            exportData () {
+                //一定要给Table标签添加属性 ref="table" 才能使用导出csv
+                this.$refs.table.exportCsv({
+                    filename: '导出数据'
+                });
+            },
+            singleAddBkey () {
+                this.$router.push({ path: '/single-add-bkey' })
+            },
+            singleAddBookid () {
+                this.$router.push({ path: '/single-add-bookid' })
+            },
+            singleCancelAuth () {
+                this.$router.push({ path: '/single-cancel-auth' })
+            },
         }
     }
 </script>
